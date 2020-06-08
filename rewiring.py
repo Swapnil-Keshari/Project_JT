@@ -14,7 +14,7 @@ G.add_edges_from([(1,3)],signal='i')
 G.add_edges_from([(2,3),(3,4)],signal='a')
 nx.write_gml(G, "test.gml")
 
-GeneDict={1:None,2:["3P","6P","2P","3P-6P-2P"],3:["3P","5P","3P-4P"],4:None}
+GeneDict={1:None,2:["3P","6P","2P","3P-6P","3P-6P-2P"],3:["4P","5P","3P-4P"],4:None}
 
 removeNodeList=[]
 
