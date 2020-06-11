@@ -7,12 +7,14 @@ Created on Thu May 14 11:18:21 2020
 
 import pandas as pd
 
-ph = pd.read_excel('D:\Desktop\IITB\Project_Juilee\phosphoproteomics.xlsx',nrows=50)
+ph = pd.read_csv('D:\Desktop\IITB\Project_Juilee\phosphoproteomics.csv')
 
 ph.fillna(0, inplace=True)  
 ph.sort_values(by=['Gene','Sequence'],inplace=True)
 ph.reset_index(drop=True, inplace=True)
 ph.drop(columns = "Unnamed: 0", inplace = True)
+
+
 #ph.dropna(inplace = True) 
 
 new= ph["Modifications"].str.split(' (?=\dxPhospho)', n = 1, expand = True)
@@ -23,10 +25,15 @@ ph['Phospho'] = ph["Phospho"].str.replace('\;\s', '-')
 ph['Phospho'] = ph["Phospho"].str.replace('T/S', 'S/T')
 ph.drop(columns =["Modifications"], inplace = True)
 
-#for index in range(len(ph['Sequence'])):
-#    ph['Sequence'][index]=str(ph['Gene'][index])+"_"+str(ph['Sequence'][index])+"_"+str(ph['Phospho'][index])
+#ph['Sequence1'] = ph[['Gene', 'Sequence', 'Phospho']].agg('-'.join, axis=1)
+ph['Sequence1']=ph['Gene'].astype(str)+"_"+ph['Sequence'].astype(str)+"_"+ph['Phospho'].astype(str)
+    
+res = ph.groupby('Sequence1', as_index=False).sum()
 
-
+new= res["Sequence1"].str.split('_', n = 2, expand = True)
+res["Gene"] = new[0].astype(str)
+res["Sequence"]=new[1].astype(str)
+res["Phospho"]=new[2].astype(str)
 
 
 
