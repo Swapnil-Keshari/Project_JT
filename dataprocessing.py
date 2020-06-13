@@ -6,8 +6,10 @@ Created on Thu May 14 11:18:21 2020
 """
 
 import pandas as pd
-
-ph = pd.read_csv('D:\Desktop\IITB\Project_Juilee\phosphoproteomics.csv')
+"""
+Adding comments
+"""
+ph = pd.read_csv('D:\Desktop\IITB\Project_Juilee\phosphoproteomics.csv', nrows=50)
 
 ph.fillna(0, inplace=True)  
 ph.sort_values(by=['Gene','Sequence'],inplace=True)
