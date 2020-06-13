@@ -2,7 +2,11 @@
 """
 Created on Fri May 29 08:28:51 2020
 
-@author: sanka
+@author: Swapnil Keshari
+
+Summary: This file imports the res dataframe and operates on it to delete the unknown phosphorylation
+sites and add it to the known site by matching. Finally the result is a multi layer dictionary
+Dict2={Gene:{Sequence:{Phospho:[[dataframe]]}}}
 """
 
 import pandas as pd
@@ -10,141 +14,67 @@ import numpy as np
 import re
 from dataprocessing import res
 
-#ph['Sequence1']=ph['Sequence']
-#
-#for index in range(len(ph['Sequence'])):
-#    ph['Sequence1'][index]=str(ph['Sequence'][index])+"_"+str(ph['Phospho'][index])
-#
-#res = ph.groupby('Sequence1', as_index=False).sum()
+#Creating dictionary from the initial dataframe imported
 Dict1=res.to_dict('series')
-
+#This is the start of multilevel dictionary in which genes are mapped to their sequences which are mapped to the corresponding
+#phosphorylation sites. The sites have the initial values stored corresponding to them in form of data frame
 Dict2={}
 Dict2={gene:{} for gene in set(res['Gene'])}
-
-#Dict3={}
-#Dict3={gene:{} for gene in set(res['Gene'])}
+#Adds sequences corresponding to the gene
 for index in range(len(Dict1["Gene"])):
     print index
     if Dict1["Gene"][index] in Dict2.keys():
         Dict2[Dict1["Gene"][index]][Dict1['Sequence'][index]]={}
-
+#Adds Phospo sites corresponding to the sequence and then appending the initial values as dataframe
 for index in range(len(Dict1["Gene"])):
     print str (index) + "A"
     if Dict1["Gene"][index] in Dict2.keys():
         if Dict1["Sequence"][index] in Dict2[Dict1["Gene"][index]].keys():
             Dict2[Dict1["Gene"][index]][Dict1['Sequence'][index]][Dict1['Phospho'][index]]=[]
             Dict2[Dict1["Gene"][index]][Dict1['Sequence'][index]][Dict1['Phospho'][index]].append(res.iloc[[index]].select_dtypes(exclude=[np.object]))
-
+#This loop looks for all the unknown phosphorylation sites and add it to similar one and deletes them
 for gene in Dict2.keys():
     print gene
-#    for index in range(len(Dict1["Gene"])):
-#        print index
-#        if gene == Dict1["Gene"][index]:
-#            Dict2[gene][Dict1['Sequence'][index]]={}
-#    for seq in Dict2[gene].keys():
-#        print 'Seq'
-#        for index in range(len(Dict1["Gene"])):
-#            if seq == Dict1["Sequence"][index]:
-#                Dict2[gene][seq][Dict1['Phospho'][index]]=[]
-#        for phospho in Dict2[gene][seq]:
-#            print 'Phospho'
-#            for index in range(len(Dict1["Gene"])):
-#                if (str(gene)+'_'+str(seq)+'_'+str(phospho)) == Dict1["Sequence1"][index]:
-#                    Dict2[gene][seq][phospho].append(res.iloc[[index]].select_dtypes(exclude=[np.object]))
-#    print 'Dict Formed'
     for seq in Dict2[gene].keys():
         print seq
         for ele in Dict2[gene][seq].keys():
-#            if len(Dict2[gene][seq][ele])>1:
-#                x = len(Dict2[gene][seq][ele])-1
-#                for i in range(x):
-#                    Dict2[gene][seq][ele][0]= pd.concat([Dict2[gene][seq][ele][0],Dict2[gene][seq][ele][1]]).groupby(level=0).sum()
-#                    Dict2[gene][seq][ele][0]= Dict2[gene][seq][ele][0].reset_index().replace({'index':{Dict2[gene][seq][ele][0].index.values[0]:Dict2[gene][seq][ele][1].index.values[0]}}).groupby('index').sum()
-#                    del Dict2[gene][seq][ele][1]
-                
-            if (re.match('1xS\d|1xT\d|1xS/T', ele) is None) and '1x' in ele: #S/T
+            #For 1xS or 1xT type of entries. We don't touch 1xS/T
+            if (re.match('1xS\d|1xT\d|1xS/T', ele) is None) and '1x' in ele: #Check for 1xS,1xT AND 1x
                 for ele1 in Dict2[gene][seq].keys():
-                    if (re.match('1xS\d|1xT\d',str(ele1)) is not None) and '1x' in str(ele1):
+                    if (re.match('1xS\d|1xT\d',str(ele1)) is not None) and '1x' in str(ele1):# Check for 1xS<digit>,1xT<digit> AND 1x
+                        #We add the values of the dataframe to the first match and then delete the element ele
                         a= pd.concat([Dict2[gene][seq][ele1][0],Dict2[gene][seq][ele][0]]).groupby(level=0).sum()
                         Dict2[gene][seq][ele1][0]= a.reset_index().replace({'index':{Dict2[gene][seq][ele][0].index.values[0]:Dict2[gene][seq][ele1][0].index.values[0]}}).groupby('index').sum()
                         del Dict2[gene][seq][ele]
                         break
-            if 'S/T' in ele and '2x' in ele and '2xS/T' not in ele:
+            #For 2xS/T-S<digit> or 2xS/T-T<digit> type of entries. We don't touch 2xS/T
+            if 'S/T' in ele and '2x' in ele and '2xS/T' not in ele:# Check for 2xS/T-S<digit> or 2xS/T-T<digit> type
                 s = ele.replace('2x','')
                 for value in s.split('-'):
-                    if (re.match('S\d|T\d',value) is not None):
+                    if (re.match('S\d|T\d',value) is not None):# Extracting S<digit> or T<digit>
                         ele2 =value
                 for ele1 in Dict2[gene][seq].keys():
                     if ele2 in ele1 and '2x' in ele1 and 'S/T' not in ele1:
+                        #We add the values of the dataframe to the first match and then delete the element ele
                         a= pd.concat([Dict2[gene][seq][ele1][0],Dict2[gene][seq][ele][0]]).groupby(level=0).sum()
                         Dict2[gene][seq][ele1][0]= a.reset_index().replace({'index':{Dict2[gene][seq][ele][0].index.values[0]:Dict2[gene][seq][ele1][0].index.values[0]}}).groupby('index').sum()
                         del Dict2[gene][seq][ele]
                         break
+            #For 3x which has S/T in it type of entries. We don't touch 3xS/T
             elif 'S/T' in ele and '3x' in ele and '3xS/T' not in ele:
                 t = ele.replace('3x','')
 #                print t
                 u=t.split('-')
-                u.remove('S/T')
+                u.remove('S/T')#remove S/T from the set so that only digit values remain
                 v=set(t)
 #                print v
                 for ele1 in Dict2[gene][seq].keys():
                     if '3x' in ele1 and 'S/T' not in ele1:
                         t1 = ele1.replace('3x','')
                         v1 = set (t1.split('-'))
-                        if v.issubset(v1):
+                        if v.issubset(v1):# if the digit values are available in the other 3x
+                            #We add the values of the dataframe to the first match and then delete the element ele
                             a= pd.concat([Dict2[gene][seq][ele1][0],Dict2[gene][seq][ele][0]]).groupby(level=0).sum()
                             Dict2[gene][seq][ele1][0]= a.reset_index().replace({'index':{Dict2[gene][seq][ele][0].index.values[0]:Dict2[gene][seq][ele1][0].index.values[0]}}).groupby('index').sum()
                             del Dict2[gene][seq][ele]
                             break
-                
-
-#df_add = df1.add(df2, fill_value=0)
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-#from numpy.random import randint
-#
-#df = pd.DataFrame(columns=['lib','lib1', 'qty1', 'qty2','qty3','qty4','qty5'])
-#for i in range(5):
-#     df.loc[i] = ['name']+ ['nam'+str(i)] + list(randint(10, size=5))
-#ph['Zeroes']=(ph == 0).astype(int).sum(axis=1)
-#ph_1 = ph[ph['Zeroes'] > 20] 
-#res = ph_1.groupby('Sequence', as_index=False).sum()
-#res.drop(columns =["Zeroes"], inplace = True)
-#res['Zeroes']=(res == 0).astype(int).sum(axis=1)
-##rslt_df = res.loc[res['Zeroes'] > 20] 
-#res1 =ph_1.groupby('Sequence').agg('sum')
-#print ph
-#print res1
-#print res
-#df = pd.DataFrame({'PC': ['DE101','DE101'], 'RatingCY': [None,"AA+"], 'RatingPY': ['AA', None],'HT':['GV','GV'],'MV1':[5.0,3.0],'MV2':[1.0,2.0]}, )
-#
-#a=df.head(1).combine_first(df.tail(1))
-#
-#obj_df = df.select_dtypes(include=[np.object])
-#num_df = df.select_dtypes(exclude=[np.object])
-#
-#b= obj_df.head(1).combine_first(obj_df.tail(1)).join(num_df.head(1)+(num_df.tail(1)))
