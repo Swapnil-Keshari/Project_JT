@@ -1,3 +1,3 @@
 # Project_JT
 
-Adding comments to the dataprcessing file
+Adding comments to the dataprocessing file
