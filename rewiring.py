@@ -86,21 +86,21 @@ for gene in removeNodeList:
                 temp.append(new1[1])
                 v1=set(temp)
                 if diList!=[]:
-                    flag2=0
+                    isSubsetofDi=0
                     for di in diList:
                         new2=di.split('_2x')
                         v2=set(new2[1].split('-'))
                         if v1.issubset(v2):
                             G.add_edge(mono,di,signal="a")
-                            flag2=flag2+1
+                            isSubsetofDi=isSubsetofDi+1
                             if triList!=[]:
-                                flag3=0
+                                isSubsetofTri=0
                                 for tri in triList:
                                     new3=tri.split('_3x')
                                     v3=set(new3[1].split('-'))
                                     if v2.issubset(v3):
                                         G.add_edge(di,tri,signal="a")
-                                        flag3=flag3+1
+                                        isSubsetofTri=isSubsetofTri+1
                                         for finish in G.successors(gene):
                                             edge2=G.get_edge_data(gene,finish)["signal"]
                                             if edge2=="i":
@@ -108,7 +108,7 @@ for gene in removeNodeList:
                                             else:
                                                 G.add_edge(tri,finish,signal="a")
                                         removeTriList.append(tri)
-                                if flag3==0:
+                                if isSubsetofTri==0:
                                     for finish in G.successors(gene):
                                         edge2=G.get_edge_data(gene,finish)["signal"]
                                         if edge2=="i":
@@ -124,15 +124,15 @@ for gene in removeNodeList:
                                     else:
                                         G.add_edge(di,finish,signal="a")
                                 removeDiList.append(di)
-                    if flag2==0:
+                    if isSubsetofDi==0:
                         if triList!=[]:
-                            flag3=0
+                            isSubsetofTri=0
                             for tri in triList:
                                 new3=tri.split('_3x')
                                 v3=set(new3[1].split('-'))
                                 if v1.issubset(v3):
                                     G.add_edge(mono,tri,signal="a")
-                                    flag3=flag3+1
+                                    isSubsetofTri=isSubsetofTri+1
                                     for finish in G.successors(gene):
                                         edge2=G.get_edge_data(gene,finish)["signal"]
                                         if edge2=="i":
@@ -140,7 +140,7 @@ for gene in removeNodeList:
                                         else:
                                             G.add_edge(tri,finish,signal="a")
                                     removeTriList.append(tri)
-                            if flag3==0:
+                            if isSubsetofTri==0:
                                 for finish in G.successors(gene):
                                     edge2=G.get_edge_data(gene,finish)["signal"]
                                     if edge2=="i":
@@ -155,13 +155,13 @@ for gene in removeNodeList:
                                 else:
                                     G.add_edge(mono,finish,signal="a")                                    
                 elif triList!=[]:
-                    flag3=0
+                    isSubsetofTri=0
                     for tri in triList:
                         new3=tri.split('_3x')
                         v3=set(new3[1].split('-'))
                         if v1.issubset(v3):
                             G.add_edge(mono,tri,signal="a")
-                            flag3=flag3+1
+                            isSubsetofTri=isSubsetofTri+1
                             for finish in G.successors(gene):
                                 edge2=G.get_edge_data(gene,finish)["signal"]
                                 if edge2=="i":
@@ -169,7 +169,7 @@ for gene in removeNodeList:
                                 else:
                                     G.add_edge(tri,finish,signal="a")
                             removeTriList.append(tri)
-                    if flag3==0:
+                    if isSubsetofTri==0:
                         for finish in G.successors(gene):
                             edge2=G.get_edge_data(gene,finish)["signal"]
                             if edge2=="i":
@@ -195,13 +195,13 @@ for gene in removeNodeList:
                 new2=di.split('_2x')
                 v2=set(new2[1].split('-'))
                 if triList!=[]:
-                    flag3=0
+                    isSubsetofTri=0
                     for tri in triList:
                         new3=tri.split('_3x')
                         v3=set(new3[1].split('-'))
                         if v2.issubset(v3):
                             G.add_edge(di,tri,signal="a")
-                            flag3=flag3+1
+                            isSubsetofTri=isSubsetofTri+1
                             for finish in G.successors(gene):
                                 edge2=G.get_edge_data(gene,finish)["signal"]
                                 if edge2=="i":
@@ -209,7 +209,7 @@ for gene in removeNodeList:
                                 else:
                                     G.add_edge(tri,finish,signal="a")
                             removeTriList.append(tri)
-                    if flag3==0:
+                    if isSubsetofTri==0:
                         for finish in G.successors(gene):
                             edge2=G.get_edge_data(gene,finish)["signal"]
                             if edge2=="i":
