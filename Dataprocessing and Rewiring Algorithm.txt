@@ -1,4 +1,3 @@
-﻿
 CONDITIONS FOR ADDING THE PHOSPHORYLATION STATES:
 * Can we remove the entries which do not have a gene name associated with it?
 * Also there are keys naming 1-Sep (Dates)etc. What to do with it?
@@ -23,8 +22,7 @@ CONDITIONS FOR ADDING THE PHOSPHORYLATION STATES:
    3. 3xS/T are not touched
 
 
-Rewiring Network Algorithm
-Regarding rewiring I wasn't able to reduce it. Following is what I did:
+NETWORK REWIRING ALGORITHM
 1. If mono exist
    1. All mono to source
    2. If di exist
