@@ -24,14 +24,19 @@ Dict2={gene:{} for gene in set(res['Gene'])}
 for index in range(len(Dict1["Gene"])):
     print index
     if Dict1["Gene"][index] in Dict2.keys():
-        Dict2[Dict1["Gene"][index]][Dict1['Sequence'][index]]={}
+        gene=Dict1["Gene"][index]
+        Dict2[gene][Dict1['Sequence'][index]]={}
 #Adds Phospo sites corresponding to the sequence and then appending the initial values as dataframe
 for index in range(len(Dict1["Gene"])):
     print str (index) + "A"
     if Dict1["Gene"][index] in Dict2.keys():
-        if Dict1["Sequence"][index] in Dict2[Dict1["Gene"][index]].keys():
-            Dict2[Dict1["Gene"][index]][Dict1['Sequence'][index]][Dict1['Phospho'][index]]=[]
-            Dict2[Dict1["Gene"][index]][Dict1['Sequence'][index]][Dict1['Phospho'][index]].append(res.iloc[[index]].select_dtypes(exclude=[np.object]))
+        gene=Dict1["Gene"][index]#assigning to pointers to increase the speed
+        if Dict1["Sequence"][index] in Dict2[gene].keys():
+            seq=Dict1["Sequence"][index]
+            a=Dict2[gene][seq]#assigning to pointers to increase the speed
+            a[Dict1['Phospho'][index]]=[]
+            phospho=a[Dict1['Phospho'][index]]#assigning to pointers to increase the speed
+            phospho.append(res.iloc[[index]].select_dtypes(exclude=[np.object]))
 #This loop looks for all the unknown phosphorylation sites and add it to similar one and deletes them
 for gene in Dict2.keys():
     print gene
