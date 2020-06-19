@@ -8,7 +8,7 @@ Added comments to the dataprocessing_1 file
 Rewiring Network Algorithm
 
 If mono exist
-  All mono to source
+  -All mono to source
   If di exist
 Check mono in di
 If yes check tri exist
