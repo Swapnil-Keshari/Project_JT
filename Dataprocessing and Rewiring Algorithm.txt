@@ -23,7 +23,6 @@
 
 
 NETWORK REWIRING ALGORITHM
-Regarding rewiring I wasn't able to reduce it. Following is what I did:
 1. If mono exist
    1. All mono to source
    2. If di exist
