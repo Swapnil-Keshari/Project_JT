@@ -10,7 +10,7 @@ import matplotlib.pyplot as plt
 import networkConstructor as nc
 from dataprocessing_1 import Dict2
 G = nx.DiGraph()
-# Removed Lines 150, 151, 152 from networkConstructor
+
 #Creates a network
 code='04060'
 aliasDict, dict1, dict2={}, {}, {} # set up dicts for reading KEGG files
@@ -27,7 +27,11 @@ Gene1 = set (G.nodes())
 Gene2 = Gene1.intersection(Gene)
 
 nx.write_gml(G, "04060_initial.gml")
-
+#Remove Self Edges
+for edge in list(G.edges()):
+	if edge[0]==edge[1]:
+		G.remove_edge(edge[0],edge[1])
+        
 removeNodeList=[]
 #Creating a list of gene which has phosporylation position attached to it
 for gene in Gene2:
