@@ -22,7 +22,11 @@ for index in range(len(Gene)):
 #        G.add_edges_from([(Gene[index],Gene[0])],signal='i')
 
 nx.write_gml(G, "test.gml") 
-
+#Remove Self Edges
+for edge in list(G.edges()):
+	if edge[0]==edge[1]:
+		G.remove_edge(edge[0],edge[1])
+        
 removeNodeList=[]
 #Creating a list of gene which has phosporylation position attached to it
 for gene in Dict2.keys():
