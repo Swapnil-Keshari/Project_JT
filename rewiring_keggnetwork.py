@@ -3,6 +3,7 @@
 Created on Thu May 14 10:28:45 2020
 @author: Swapnil Keshari
 Summary: This file rewires the network form the Dict 2 which is imported from dataprocessing_1 file
+Networkx Version 2.2
 """
 
 import networkx as nx
