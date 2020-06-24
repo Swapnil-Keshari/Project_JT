@@ -5,3 +5,4 @@
 -Added comments to rewiring file
 -Added tweaked rewiring file which edits kegg network
 -Updated rewiring. Now it removes self edges
+-Networkx version 2.2
